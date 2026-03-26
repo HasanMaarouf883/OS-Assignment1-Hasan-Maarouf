@@ -162,7 +162,7 @@ class Process implements Runnable {
 }
 
 public class SchedulerSimulation {
-     
+     public static int Counter=1;
     public static void main(String[] args) {
         // ⚠️ IMPORTANT: Put your student ID here to seed the random number generator
         // This makes your output unique to you - DO NOT forget to change this!
@@ -286,9 +286,12 @@ public class SchedulerSimulation {
                     process.runToCompletion(); // Run until the process completes
                 }
             }
-
+Counter++;
         
         }
+
+        System.out.println("Total context switches: " + Counter); // Print the total number of context switches that occurred during the simulation
+        System.out.println(" ");
 
         
 
