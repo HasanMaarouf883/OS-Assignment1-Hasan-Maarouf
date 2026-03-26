@@ -32,7 +32,8 @@ class Process implements Runnable {
     private int timeQuantum; // Time slice (time quantum) allowed per CPU access (in milliseconds)
     private int remainingTime; // Time left for the process to finish its execution
     private int priority;// Priority level of the process 
-
+    private long lastTimeEnteredQ;// when the process last entered the ready queue
+    private long totalWaitingTime = 0; // Total time the process has spent waiting in the ready queue
     
 
     // Constructor to initialize the process with name, burst time, and time quantum
@@ -50,7 +51,7 @@ class Process implements Runnable {
     @Override
     public void run() {
 
-        
+        this.markStartedRunning();
         // Simulate running for either the time quantum or remaining time, whichever is smaller
         int runTime = Math.min(timeQuantum, remainingTime); // Run for the smaller of the two times
         
@@ -122,7 +123,7 @@ class Process implements Runnable {
     // Method to run the last process to completion, ignoring the time quantum
     public void runToCompletion() {
 
-        
+        this.markStartedRunning();
         try {
             // Run for the remaining time without splitting into smaller time slices
             System.out.println(Colors.BRIGHT_CYAN + "  ⚡ " + Colors.BOLD + Colors.CYAN + name + 
@@ -153,6 +154,19 @@ class Process implements Runnable {
 // to display the priority in the output
     public int getPriority() {
         return priority;
+    }
+//time the process entered the ready queue
+    public void markEnteredQueue() {
+        this.lastTimeEnteredQ = System.currentTimeMillis();
+    }
+
+// Calculate the waiting time
+    public void markStartedRunning() {
+        this.totalWaitingTime += (System.currentTimeMillis() - this.lastTimeEnteredQ);
+    }
+//getter for the total waiting time of the process
+    public long getWaitingTime() {
+        return this.totalWaitingTime;
     }
 
     // Check if the process has finished (i.e., no remaining time)
@@ -293,7 +307,12 @@ Counter++;
         System.out.println("Total context switches: " + Counter); // Print the total number of context switches that occurred during the simulation
         System.out.println(" ");
 
+        // After all processes have completed, print a summary of the waiting times for each process
+System.out.println("\n--- Waiting Time Summary ---");
         
+for (Process p : allProcesses) {
+            System.out.println(p.getName() + " | Burst Time: " + p.getBurstTime() + "ms | Waiting Time: " + p.getWaitingTime() + "ms");
+        }
 
 
         // End of the scheduler simulation
@@ -322,7 +341,7 @@ Counter++;
         processMap.put(thread, process);
         
         //
-       
+        process.markEnteredQueue();
 
         // Print a message indicating the process has entered the ready queue
         System.out.println(Colors.BLUE + "  ➕ " + Colors.BOLD + Colors.CYAN + process.getName()+" (Priority:" + process.getPriority() +")"+
