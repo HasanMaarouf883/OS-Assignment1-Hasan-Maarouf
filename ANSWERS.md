@@ -11,7 +11,7 @@ Answer all 4 questions with detailed explanations. Each answer should be **3-5 s
 
 **Your Answer:**
 
-[Write your answer here. Consider: What is a process? What is a thread? How do they differ in terms of memory, resources, creation overhead? Why are threads more suitable for this simulation?]
+A process is a fully independent program with its own memory space, which makes it heavy and slow to switch. A thread is a smaller part of a process that shares memory and resources with other threads, making it much lighter and faster. We used threads in this assignment because creating full processes would consume too much memory and make sharing the Ready Queue very difficult. Using threads allowed us to simulate CPU multitasking efficiently with very low overhead.
 
 ---
 
@@ -21,15 +21,21 @@ Answer all 4 questions with detailed explanations. Each answer should be **3-5 s
 
 **Your Answer:**
 
-[Write your answer here. Describe the specific behavior - where does the process go? When does it run again? Give an example from your actual program output showing a process that was re-queued.]
+If a process needs more time than the allowed time quantum, it is temporarily paused. The CPU is taken away, and the process is sent back to the end of the Ready Queue to wait for its next turn. For instance, my time quantum was 5000ms, but P1 needed 7879ms, so it couldn't finish in one round.
 
 Example from my output:
 ```
-[Paste a relevant snippet from your program output here showing a process being re-queued]
+û╢ P1 executing quantum [5000ms]
+  أة Quantum progress: [ûêûêûêûêûêûêûêûêûêûêûêûêûê] 100%
+  ╕ P1 completed quantum 5000ms ¤é Overall progress: [ûêûêûêûêûêûêûêûêûêûêûêûّûّûّ  ûّûّûّûّûّ] 63%
+     Remaining time: 2879ms
+  ╗ P1 yields CPU for context switch
+
+  ئـ P1 (Priority:3) added to ready queue ¤é Burst time: 7879ms
 ```
 
 **Explanation of example:**
-[Explain what's happening in the output snippet you pasted]
+In the pasted output, P1 runs for its full 5000ms quantum. Since it still has 2879ms of work left, it yields the CPU and prints a context switch message. Finally, the scheduler adds P1 back to the end of the Ready Queue so the next process (P2) can start.
 
 ---
 
@@ -41,16 +47,15 @@ Example from my output:
 
 [Write your answer here. For each state, explain when P1 enters that state during the simulation. Use your understanding of the code to trace through the lifecycle.]
 
-1. **New**: [When is P1 in New state?]
+1. **New**: P1 is in the New state when we first create its Process object and pass it to a new Thread, but before calling start().
 
-2. **Runnable**: [When does P1 become Runnable?]
+2. **Runnable**: P1 becomes Runnable when it enters our processQueue and waits for the CPU, or when it returns to the queue after its quantum finishes.
 
-3. **Running**: [When is P1 Running?]
+3. **Running**: P1 is in the Running state when the scheduler pulls it from the queue and it actively executes its time slice inside the run() method.
 
-4. **Waiting**: [When/why would P1 be Waiting?]
+4. **Waiting**: P1 enters a Timed Waiting state when we call Thread.sleep() in our code to simulate the actual processing time.
 
-5. **Terminated**: [When is P1 Terminated?]
-
+5. **Terminated**: P1 is Terminated when its remaining time hits 0ms, finishing its execution and exiting the system completely.
 ---
 
 ## Question 4: Real-World Applications
@@ -59,31 +64,32 @@ Example from my output:
 
 **Your Answer:**
 
-### Example 1: [Name of application/scenario]
+### Example 1: [Web Servers]
 
 **Description**: 
-[Describe the real-world scenario or application]
+Web servers use threads to handle hundreds of users trying to open a website at the exact same time.
 
 **Why Round-Robin works well here**: 
-[Explain why Round-Robin scheduling is suitable. Consider fairness, responsiveness, predictability, etc.]
+Round-Robin is perfect here because it ensures absolute fairness for all connected users. It prevents one user downloading a huge file from freezing the website for everyone else. By giving each connection a small time slice, the server stays fast and responsive.
 
-### Example 2: [Name of application/scenario]
+### Example 2: [Desktop Operating Systems]
 
 **Description**: 
-[Describe the real-world scenario or application]
+
+Modern operating systems run many background apps simultaneously, like a music player, an antivirus, and a web browser.
 
 **Why Round-Robin works well here**: 
-[Explain why Round-Robin scheduling is suitable. Consider fairness, responsiveness, predictability, etc.]
 
+Round-Robin forces heavy background apps to share the CPU with lighter apps quickly. Because the time quantum is so small, the context switching happens in milliseconds. This allows users to listen to music smoothly without any lag while browsing the internet or scanning files.
 ---
 
 ## Summary
 
 **Key concepts I understood through these questions:**
-1. 
-2. 
-3. 
+1. The difference between a heavy OS process and a lightweight thread.
+2. How the Round-Robin algorithm uses a queue to prevent process starvation.
+3. The complete lifecycle of a thread from creation to termination.
 
 **Concepts I need to study more:**
-1. 
-2. 
+1. How to prevent race conditions when multiple threads modify the same variable.
+2. The differences between Round-Robin and other algorithms like Shortest Job First.
